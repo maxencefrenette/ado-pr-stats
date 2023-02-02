@@ -24,7 +24,7 @@ async function apiRequest(request: string) {
 }
 
 async function main() {
-    console.log("PR Reviews for ${organization}/${project}");
+    console.log(`PR Reviews for ${organization}/${project}`);
     console.log(`From ${startDate.toISOString()} to ${endDate.toISOString()}`);
     console.log("Repos:")
     console.log(` - ${repositories.join("\n - ")}`);
