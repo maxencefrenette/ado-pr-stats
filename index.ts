@@ -10,8 +10,8 @@ const username = process.env.USERNAME;
 const organization = process.env.ORGANIZATION;
 const project = process.env.PROJECT;
 const repositories = process.env.REPOSITORIES!.split(',');
-const start_date = process.env.START_DATE ? new Date(process.env.START_DATE) : new Date(0);
-const end_date = process.env.END_DATE ? new Date(process.env.END_DATE) : new Date();
+const startDate = process.env.START_DATE ? new Date(process.env.START_DATE) : new Date(0);
+const endDate = process.env.END_DATE ? new Date(process.env.END_DATE) : new Date();
 
 async function apiRequest(request: string) {
     const response = await fetch(`https://dev.azure.com/${organization}/${project}/_apis${request}`, {
@@ -24,6 +24,12 @@ async function apiRequest(request: string) {
 }
 
 async function main() {
+    console.log("PR Reviews for ${organization}/${project}");
+    console.log(`From ${startDate.toISOString()} to ${endDate.toISOString()}`);
+    console.log("Repos:")
+    console.log(` - ${repositories.join("\n - ")}`);
+    console.log();
+
     let all_reviewers: any[] = [];
 
     for (const repo of repositories) {
@@ -32,7 +38,7 @@ async function main() {
         );
         const pull_requests = response.value;
         const filtered_pull_requests = chain(pull_requests)
-            .filter((pr) => start_date < new Date(pr.closedDate) && new Date(pr.closedDate) < end_date)
+            .filter((pr) => startDate < new Date(pr.closedDate) && new Date(pr.closedDate) < endDate)
             .value();
         const reviewers = chain(filtered_pull_requests).map('reviewers').flatten().filter(r => !r.isContainer).map('uniqueName').value();
         all_reviewers = all_reviewers.concat(reviewers);
